@@ -634,6 +634,7 @@
                     TestSetList.forEach(function(record, index) {
                         var percentComplete = (((passTestSetCounts[index] + failTestSetCounts[index] + blockedTestSetCounts[index] + errorTestSetCounts[index] + otherTestSetCounts[index])) / totalTestSetCounts[index]);
                         var testingPercentPass = (passTestSetCounts[index]/((passTestSetCounts[index] + failTestSetCounts[index] + blockedTestSetCounts[index] + errorTestSetCounts[index] + otherTestSetCounts[index]))) || 0;
+                        var lefttoRun = (totalTestSetCounts[index] - (passTestSetCounts[index] + failTestSetCounts[index] + blockedTestSetCounts[index] + errorTestSetCounts[index] + otherTestSetCounts[index]));
                         that._testSummary.push({
                             TestSetID: TestSetList[index],
                             TestSetName: TestSetNameList[index],
@@ -642,6 +643,7 @@
                             Blocked: blockedTestSetCounts[index],
                             Error: errorTestSetCounts[index],
                             Other: otherTestSetCounts[index],
+                            ToRun: lefttoRun,
                             Total: totalTestSetCounts[index],
                             PercentComplete: percentComplete,
                             PercentPass: testingPercentPass,
@@ -677,13 +679,18 @@
 					{
 						totalOther+=that._testSummary[r].Other;
 					}
+					var totalToRun = 0;
+					for (r=0;r<that._testSummary.length;r++)
+					{
+						totalToRun+=that._testSummary[r].ToRun;
+					}
 					var totalTotal = 0;
 					for (r=0;r<that._testSummary.length;r++)
 					{
 						totalTotal+=that._testSummary[r].Total;
 					}
 
-					that._testSummary.push({
+			that._testSummary.push({
                             TestSetID: '',
                             TestSetName: '<B>TOTALS</B>',
                             Passed: totalPass,
@@ -692,6 +699,7 @@
                             Error: totalError,
                             Other: totalOther,
                             Total: totalTotal,
+                            ToRun: totalToRun,
                             PercentComplete: (((totalPass + totalFail + totalBlocked + totalError + totalOther)) / totalTotal),
                             PercentPass: (totalPass/((totalPass + totalFail + totalBlocked + totalError + totalOther))) || 0,
                             ProjectObj: '',
@@ -740,6 +748,9 @@
                                 {
                                     percentDoneName: 'PercentPass'
                                 })
+                            },
+                            {
+                                text: 'Not Run', dataIndex: 'ToRun', flex: 1
                             },
                             {
                                 text: 'Passed', dataIndex: 'Passed', flex: 1
