@@ -10,4 +10,4 @@ This app conveys test status for a given iteration in 3 sections:
 To have the grids open all the time instead of one at a time, simply comment out the "accordion" line from near the top of the code.
 
 Screenshot:<P>
-![Alt text](https://github.com/jkrooswyk/Test-Status-by-Test-Set/raw/master/Screenshot.png)
+![Alt text](https://github.com/jkrooswyk/Test-Status-by-Test-Set/raw/master/Screenshot2.png)
