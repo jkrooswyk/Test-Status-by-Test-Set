@@ -532,9 +532,9 @@
                                     testFailCounters++;
                                 } else if (testsetrecord.resVerdict == "Blocked") {
                                     testBlockedCounters++;
-                                } else if (testsetrecord.resVerdict == "Incomplete") {
+                                } else if (testsetrecord.resVerdict == "Error") {
                                     testErrorCounters++;
-                                } else {
+                                } else if (testsetrecord.resVerdict == "Inconclusive") {
                                     testOtherCounters++;
                                 }
                             }
@@ -751,10 +751,10 @@
                                 text: 'Blocked', dataIndex: 'Blocked', flex: 1
                             },
                             {
-                                text: 'Incomplete', dataIndex: 'Error', flex: 1
+                                text: 'Inconclusive', dataIndex: 'Error', flex: 1
                             },
                             {
-                                text: 'Other', dataIndex: 'Other', flex: 1
+                                text: 'Error', dataIndex: 'Other', flex: 1
                             },
                             {
                                 text: 'Set Total', dataIndex: 'Total', flex: 1
