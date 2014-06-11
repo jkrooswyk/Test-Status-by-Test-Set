@@ -633,8 +633,12 @@
                     that._testSummary = [];
                     TestSetList.forEach(function(record, index) {
                         var percentComplete = (((passTestSetCounts[index] + failTestSetCounts[index] + blockedTestSetCounts[index] + errorTestSetCounts[index] + otherTestSetCounts[index])) / totalTestSetCounts[index]);
+                        if (percentComplete > 1) {percentComplete = 1}
                         var testingPercentPass = (passTestSetCounts[index]/((passTestSetCounts[index] + failTestSetCounts[index] + blockedTestSetCounts[index] + errorTestSetCounts[index] + otherTestSetCounts[index]))) || 0;
+                        if (testingPercentPass > 1) {testingPercentPass = 1}
                         var lefttoRun = (totalTestSetCounts[index] - (passTestSetCounts[index] + failTestSetCounts[index] + blockedTestSetCounts[index] + errorTestSetCounts[index] + otherTestSetCounts[index]));
+                        if (lefttoRun < 0) {lefttoRun = 0}
+                        
                         that._testSummary.push({
                             TestSetID: TestSetList[index],
                             TestSetName: TestSetNameList[index],
