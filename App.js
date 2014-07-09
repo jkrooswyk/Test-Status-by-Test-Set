@@ -56,8 +56,9 @@ launch: function() {
 							{
 								xtype: 'container',
 								layout: 'accordion',
-								itemId: 'testStatus' ,
-								width:'100%',								
+								itemId: 'testStatus',
+								width:'100%',
+								height: 500
 							}
 						]
 					});
@@ -723,7 +724,6 @@ launch: function() {
                                         renderTo: id,
                                         value: v / 100,
                                         width: 100,
-                                        height: 14,
                                         text: Number(v).toFixed(0) + '%'
                                     });
                                 }, 50);
@@ -740,7 +740,6 @@ launch: function() {
                                         renderTo: id,
                                         value: v / 100,
                                         width: 100,
-                                        height: 14,
                                         text: Number(v).toFixed(0) + '%'
                                     });
                                 }, 50);
