@@ -1,12 +1,4 @@
-
-            var Ext = window.Ext4 || window.Ext;
-            Ext.define('CustomApp', {
-                extend: 'Rally.app.App',
-                componentCls: 'app',
-                title: 'Test Status Panel',
-                
-            
-                launch: function() {
+launch: function() {
 					var deStore;
 
 					var panel1 =Ext.create('Ext.panel.Panel',{
@@ -634,8 +626,8 @@
                             Other: otherTestSetCounts[index],
                             ToRun: lefttoRun,
                             Total: totalTestSetCounts[index],
-                            PercentComplete: percentComplete,
-                            PercentPass: testingPercentPass,
+                            PercentComplete: percentComplete * 100,
+                            PercentPass: testingPercentPass * 100,
                             ProjectObj: TestSetObjList[index],
                             TestSetObj: TestSetObjList2[index]
                         });
@@ -689,8 +681,8 @@
                             Other: totalOther,
                             Total: totalTotal,
                             ToRun: totalToRun,
-                            PercentComplete: (((totalPass + totalFail + totalBlocked + totalError + totalOther)) / totalTotal),
-                            PercentPass: (totalPass/((totalPass + totalFail + totalBlocked + totalError + totalOther))) || 0,
+                            PercentComplete: (((totalPass + totalFail + totalBlocked + totalError + totalOther)) / totalTotal) * 100,
+                            PercentPass: (totalPass/((totalPass + totalFail + totalBlocked + totalError + totalOther))) * 100 || 0,
                             ProjectObj: '',
                             TestSetObj: ''
                         });
@@ -721,22 +713,39 @@
                                 text: 'Set Name', dataIndex: 'TestSetName', flex: 3
                             },
                             {
-                                text: 'EXECUTION',
-                                xtype: 'templatecolumn',
+                                text: 'EXECUTION', dataIndex: 'PercentComplete',
+                          
                                 flex: 2,
-                                tpl: Ext.create('Rally.ui.renderer.template.PercentDoneTemplate', 
-                                {
-                                    percentDoneName: 'PercentComplete'
-                                })
+                                renderer: function (v, m, r) {
+                                var id = Ext.id();
+                                Ext.defer(function () {
+                                    Ext.widget('progressbar', {
+                                        renderTo: id,
+                                        value: v / 100,
+                                        width: 100,
+                                        height: 14,
+                                        text: Number(v).toFixed(0) + '%'
+                                    });
+                                }, 50);
+                                return Ext.String.format('<div id="{0}"></div>', id);
+                                }
                             },
                             {
-                                text: 'PASSING',
-                                xtype: 'templatecolumn',
+                                text: 'PASSING', dataIndex: 'PercentPass', 
                                 flex: 2,
-                                tpl: Ext.create('Rally.ui.renderer.template.PercentDoneTemplate', 
-                                {
-                                    percentDoneName: 'PercentPass'
-                                })
+                                renderer: function (v, m, r) {
+                                var id = Ext.id();
+                                Ext.defer(function () {
+                                    Ext.widget('progressbar', {
+                                        renderTo: id,
+                                        value: v / 100,
+                                        width: 100,
+                                        height: 14,
+                                        text: Number(v).toFixed(0) + '%'
+                                    });
+                                }, 50);
+                                return Ext.String.format('<div id="{0}"></div>', id);
+                                }
                             },
                             {
                                 text: 'Not Run', dataIndex: 'ToRun', flex: 1,
@@ -1082,5 +1091,3 @@
             {
                 return a - b;
             }
-
-            
