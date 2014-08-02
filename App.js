@@ -1,4 +1,4 @@
-launch: function() {
+               launch: function() {
 					var deStore;
 
 					var panel1 =Ext.create('Ext.panel.Panel',{
@@ -56,8 +56,8 @@ launch: function() {
 							{
 								xtype: 'container',
 								layout: 'accordion',
-								itemId: 'testStatus',
-								width:'100%',
+								itemId: 'testStatus' ,
+								width:'100%',	
 								height: 500
 							}
 						]
@@ -194,7 +194,7 @@ launch: function() {
                             value: this.down('#iterationComboBox').getRecord().data.Name
                         }],
                         fetch: [
-                            'FormattedID','Name','TestCases', 'ObjectID', 'Project'
+                            'FormattedID','Name','TestCases', 'ObjectID', 'Project' 
                         ],
                         limit: 10000,
                         listeners: {
@@ -210,9 +210,10 @@ launch: function() {
                     that = this;
                     that._testSetTestList = [];
 					that._testSetKeyTestList = [];
-                    console.log(testsetdata);
+                    //console.log(testsetdata);
                     
                     Ext.Array.each(testsetdata, function(record) {
+                        ProjObj = record.get('Project');
                         Ext.Array.each(record.get('TestCases'), function(name, index) {
                             that._testSetTestList.push({
                                 resID: name.FormattedID,
@@ -221,16 +222,15 @@ launch: function() {
                                 resSetID: record.get('FormattedID'),
                                 resSet: record.get('Name'),
                                 resSetObject: record.get('ObjectID'),
-                                resSetProject: name.Project.ObjectID                        
+                                resSetProject: ProjObj.ObjectID                        
                             });
                         });
                     });
 					
 					//create key test case list
-					
 					/* Ext.Array.each(testsetdata, function(record) {
                         Ext.Array.each(record.get('TestCases'), function(name, index) {
-						if ((name.FormattedID=='TC8701') || (name.FormattedID =='TC5322'))
+						if ((name.FormattedID=='xx') || (name.FormattedID =='xxx'))
 						{
                             that._testSetKeyTestList.push({
                                 resID: name.FormattedID,
@@ -239,7 +239,7 @@ launch: function() {
                                 resSetID: record.get('FormattedID'),
                                 resSet: record.get('Name'),
                                 resSetObject: record.get('ObjectID'),
-                                resSetProject: name.Project.ObjectID                        
+                                resSetProject: record.get('Project.ObjectID')                        
                             });
 						}
                         });
@@ -252,18 +252,13 @@ launch: function() {
                         autoLoad: true,
                         storeId: 'TestResultStorer',
 						context: {
-                            projectScopeUp:false,
-                            projectScopeDown:true
+                            project: null
 						},
                         filters: [ {
                             property : 'TestSet.Iteration.Name',
                             operator : '=',
                             value    : this.down('#iterationComboBox').getRecord().data.Name
-                        },{
-                            property : 'TestSet.Project',
-                            operator : '=',
-                            value: this.getContext().getDataContext().project
-                        } ],
+                        }, ],
                         //sorters: [{
                         //        property: 'TestSet',
                         //        direction: 'ASC'
@@ -285,6 +280,7 @@ launch: function() {
                     that = this;
                     that._testResultList = [];
 					that._testKeyResultList2=[];
+                    //console.log(testrecorddata);
 
                     Ext.Array.each(testrecorddata, function(record) {
                         var datevar = record.get('Date');
@@ -445,7 +441,7 @@ launch: function() {
                             }
                         }
                     });
-//console.log(TestSetObjList2);
+
                     //create test set name list
                     var TestSetNameList =[];
                     var testindex = 0;
@@ -457,7 +453,7 @@ launch: function() {
                             var val1 = record.resSet;
                             var val2 = TestSetNameList[testindex - 1];
                             var val3 = record.resSetObject;
-                            var val4 = TestSetObjList2[testindex - 1]
+                            var val4 = TestSetObjList2[testindex - 1];
                             //console.log ("val1 = " + val1 + ", val2 = " + val2 + ", val3 = " + val3 + ", val4 = " + val4);
                             if ((val1 !== val2) || (val3 !== val4)) {
                                 //console.log("hit!");
@@ -472,7 +468,7 @@ launch: function() {
                     var index = TestSetObjList2.length;
                     i=0;
                     while (i<index) {
-                        TestSetObjList.push(that._testSetTestList[i].resSetProject)
+                        TestSetObjList.push(that._testSetTestList[i].resSetProject);
                         i++;
                     }
 
@@ -488,7 +484,6 @@ launch: function() {
                         totalTestSetCounts.push(testCounters);
                         testCounters = 0;
                     });
-                    //console.log(totalTestSetCounts);
 
                     //obtain test outcome counts for each test set
                     var passTestSetCounts = [];
@@ -718,32 +713,32 @@ launch: function() {
                           
                                 flex: 2,
                                 renderer: function (v, m, r) {
-                                var id = Ext.id();
-                                Ext.defer(function () {
-                                    Ext.widget('progressbar', {
-                                        renderTo: id,
-                                        value: v / 100,
-                                        width: 100,
-                                        text: Number(v).toFixed(0) + '%'
-                                    });
-                                }, 50);
-                                return Ext.String.format('<div id="{0}"></div>', id);
+                                    var id = Ext.id();
+                                    Ext.defer(function () {
+                                        Ext.widget('progressbar', {
+                                            renderTo: id,
+                                            value: v / 100,
+                                            width: 100,
+                                            text: Number(v).toFixed(0) + '%'
+                                        });
+                                    }, 50);
+                                    return Ext.String.format('<div id="{0}"></div>', id);
                                 }
                             },
                             {
                                 text: 'PASSING', dataIndex: 'PercentPass', 
                                 flex: 2,
                                 renderer: function (v, m, r) {
-                                var id = Ext.id();
-                                Ext.defer(function () {
-                                    Ext.widget('progressbar', {
-                                        renderTo: id,
-                                        value: v / 100,
-                                        width: 100,
-                                        text: Number(v).toFixed(0) + '%'
-                                    });
-                                }, 50);
-                                return Ext.String.format('<div id="{0}"></div>', id);
+                                    var id = Ext.id();
+                                    Ext.defer(function () {
+                                        Ext.widget('progressbar', {
+                                            renderTo: id,
+                                            value: v / 100,
+                                            width: 100,
+                                            text: Number(v).toFixed(0) + '%'
+                                        });
+                                    }, 50);
+                                    return Ext.String.format('<div id="{0}"></div>', id);
                                 }
                             },
                             {
@@ -752,7 +747,7 @@ launch: function() {
                                     var newvalue;
                                     newvalue = "<span style='color:red' >"+value+"</span>";
                                     return newvalue;
-                                  }
+                                }
                             },
                             {
                                 text: 'Passed', dataIndex: 'Passed', flex: 1
@@ -842,8 +837,8 @@ launch: function() {
 
                         ]
                     });
-					
                     this.down('#testStatus').add(this._Grid2);
+                    
 					//get the data out there for KEY Test case results
                     /* this._GridKeyRuns = Ext.create('Rally.ui.grid.Grid', {
                         xtype: 'rallygrid',
@@ -959,7 +954,6 @@ launch: function() {
                                     var link = "../tcr/new.sp?cpoid=" + proj + "&projectScopeUp=false&projectScopeDown=false&testCaseOid=" + caseID;
                                     var window = "javascript:void window.open('" + link + "','NewTestResultWindow','width=700,height=500,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0')";
                                     var linker = '<a href="#" onClick="' + window + '"><b>NEW RESULT</b></a>';
-                                    console.log(linker);
                                     return linker;
                                 }
                             }
@@ -1015,7 +1009,7 @@ launch: function() {
                                     var link = "../tcr/new.sp?cpoid=" + proj + "&projectScopeUp=false&projectScopeDown=false&testCaseOid=" + caseID + "&testSetOid=" + setID;
                                     var window = "javascript:void window.open('" + link + "','NewTestResultWindow','width=700,height=500,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0')";
                                     var linker = '<a href="#" onClick="' + window + '">NEW RESULT</a>';
-                                    console.log(linker);
+
                                     return linker;
                                 }
                             }*/
@@ -1024,7 +1018,7 @@ launch: function() {
 
                     this.down('#testStatus').add(this._Grid);
 					
-					var defilter = Ext.create('Rally.data.QueryFilter', {
+					/*var defilter = Ext.create('Rally.data.QueryFilter', {
             										property: 'State',
             										operator: '!=',
             										value: 'Duplicate'
@@ -1064,7 +1058,7 @@ launch: function() {
 							],
 
 						  fetch: ['FormattedID', 'Name', 'Owner','ScheduleState','Release','State']   // Look in the WSAPI docs online to see all fields available!
-						});
+						});*/
                 },
 				
 				/*_loadDEGrid:function(deStore){
