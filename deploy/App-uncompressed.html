@@ -3,7 +3,7 @@
 <head>
     <title>Test Status per Test Set by Iteration</title>
         <meta name="Name" content="Test Status per Test Set by Iteration" />
-        <meta name="Version" content="2.3" />
+        <meta name="Version" content="2.4" />
         <meta name="Vendor" content="Rally Software" />
         <meta name="Author" content="Joel K" />
 
@@ -307,6 +307,11 @@
 
                     Ext.Array.each(testrecorddata, function(record) {
                         var datevar = record.get('Date');
+                 		//test for tester's name on result
+                        var testerName = record.get('Tester') || "<I>No Tester Name<I>";
+                        if (testerName !== "<I>No Tester Name<I>") {
+                        	testerName = record.get('Tester')._refObjectName
+                        }
 
                         that._testResultList.push({
                                 resID: record.get('TestCase').FormattedID,
@@ -314,7 +319,7 @@
                                 resObject: record.get('TestCase').ObjectID,
                                 resVerdict: record.get('Verdict'),
                                 resDate: datevar,
-                                resTester: record.get('Tester')._refObjectName,
+                                resTester: testerName,
                                 resSetID: record.get('TestSet').FormattedID,
                                 resSet: record.get('TestSet')._refObjectName,
                                 resSetObject: record.get('TestSet').ObjectID,
