@@ -3,7 +3,7 @@
 <head>
     <title>Test Status per Test Set by Iteration</title>
         <meta name="Name" content="Test Status per Test Set by Iteration" />
-        <meta name="Version" content="2.4" />
+        <meta name="Version" content="3.0" />
         <meta name="Vendor" content="Rally Software" />
         <meta name="Author" content="Joel K" />
 
@@ -12,6 +12,7 @@
     
     // This app finds all test sets created during a given iteration
     // A current iteration MUST exist for this app to run
+    // Version 3.0 switches from Accordion layout to multiple items for layout due to SDK changes!
     
         Rally.onReady(function() {
             var Ext = window.Ext4 || window.Ext;
@@ -78,11 +79,21 @@
 						   
 							{
 								xtype: 'container',
-								layout: 'accordion',
-								itemId: 'testStatus' ,
-								width:'100%'	
-								//height: 500
-							}
+								layout: 'fit',
+								itemId: 'testStatus',
+								width: '100%',
+                                height: 400
+							},
+                            {
+                                xtype: 'container',
+                                itemId: 'testStatus1',
+                                width: '100%'
+                            },
+                            {
+                                xtype: 'container',
+                                itemId: 'testStatus2',
+                                width: '100%'
+                            }
 						]
 					});
 					
@@ -197,6 +208,7 @@
                         this._summaryGrid.destroy();
                         this._Grid.destroy();
                         this._Grid2.destroy();
+                        console.log("grids destroyed");
                     }
                     
                     TestSetStore = Ext.create('Rally.data.WsapiDataStore', {
@@ -702,8 +714,8 @@
 						totalTotal+=that._testSummary[r].Total;
 					}
 
-			that._testSummary.push({
-                            TestSetID: '',
+			     that._testSummary.push({
+                            TestSetID: '--',
                             TestSetName: '<B>TOTALS</B>',
                             Passed: totalPass,
                             Failed: totalFail,
@@ -872,7 +884,7 @@
 
                         ]
                     });
-                    this.down('#testStatus').add(this._Grid2);
+                    this.down('#testStatus1').add(this._Grid2);
                     
 					//get the data out there for KEY Test case results
                     /* this._GridKeyRuns = Ext.create('Rally.ui.grid.Grid', {
@@ -1051,7 +1063,7 @@
                         ]
                     });
 
-                    this.down('#testStatus').add(this._Grid);
+                    this.down('#testStatus2').add(this._Grid);
 					
 					/*var defilter = Ext.create('Rally.data.QueryFilter', {
             										property: 'State',
