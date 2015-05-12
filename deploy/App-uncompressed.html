@@ -244,7 +244,6 @@
                 _queryForTestResults: function(mystore, testsetdata) {
                     that = this;
                     that._testSetTestList = [];
-                    //console.log(testsetdata);
                     
                     Ext.Array.each(testsetdata, function(record) {
                         ProjObj = record.get('Project');
@@ -273,7 +272,11 @@
                             property : 'TestSet.Iteration.Name',
                             operator : '=',
                             value    : this.down('#iterationComboBox').getRecord().data.Name
-                        }, ],
+                        }, {
+                            property : 'TestSet.Project',
+                            operator : '=',
+                            value: this.getContext().getDataContext().project
+                        }],
                         //sorters: [{
                         //        property: 'TestSet',
                         //        direction: 'ASC'
@@ -294,8 +297,8 @@
                 _onTestsLoaded: function(mystore, testrecorddata) {
                     that = this;
                     that._testResultList = [];
-			that._testKeyResultList2=[];
-                    //console.log(testrecorddata);
+					that._testKeyResultList2=[];
+                    console.log(testrecorddata);
 
                     Ext.Array.each(testrecorddata, function(record) {
                         var datevar = record.get('Date');
@@ -547,7 +550,11 @@
                     //Need to find tests already run by looking at current results and comparing to complete list
                     var DeleteArray = [];
                     var numTotalTests = that._testSetTestList;
+
+                    console.log("numTotalTests");
+                    console.log(numTotalTests);
                     numTotalTests = numTotalTests.length;
+
                     Ext.Array.each(that._testResultList, function(record, index1) {
                         Ext.Array.each(that._testSetTestList, function(otherrecord, index2) {
                             if ((record.resObject == otherrecord.resObject) && (record.resSetObject == otherrecord.resSetObject)) {
@@ -560,6 +567,9 @@
                     DeleteArray.sort(sortNumber);
                     DeleteArray.reverse();
                     
+                    console.log("deletearray");
+                    console.log(DeleteArray);
+
                     for (var i=0; i<DeleteArray.length; i++) {
                         if (DeleteArray[i] == DeleteArray[i+1]) {
                             delete DeleteArray[i];
@@ -572,22 +582,7 @@
                         that._testSetTestList.splice(spliceID, 1);
                     });
 					
-					//find KEY test to run 
-					
-					///////////////////////////////////////////////////////////////////
-					//add only selected TC to the key test set test list
-					/* Ext.Array.each(that._testResultList, function(record) {
-					
-						if ((record.resID=='TC8701') || (record.resID =='TC5322') ||(record.resID =='TC5323')||(record.resID=='TC5481') ||(record.resID=='TC13802')||(record.resID=='TC5483')||(record.resID=='TC5484')||(record.resID=='TC5557')||(record.resID=='TC5556')||(record.resID=='TC5555')||(record.resID=='TC5554')||(record.resID=='TC5551')||(record.resID=='TC5550')||(record.resID=='TC13803'))
-
-						{
-							that._testKeyResultList2.push(record);
-						}
-                    }); */
-					/////////////////////////////////////////////////////////////////////////////
-
-					
-					
+										
                     //Need to find tests already run by looking at current results and comparing to complete list
                     var DeleteKeyArray = [];
                     Ext.Array.each(that._testKeyResultList2, function(record, index1) {
@@ -613,12 +608,13 @@
                     Ext.Array.each(DeleteKeyArray, function(spliceID) {
                         that._testSetKeyTestList.splice(spliceID, 1);
                     });
-					
-					//end find KEY test to run
-					
+									
 					
                     //sum total test status
                     var numTestsNotRun = that._testSetTestList;
+                    console.log("numtestsnotrun");
+                    console.log(numTestsNotRun);
+
                     numTestsNotRun = numTestsNotRun.length;
                     testingPercentComplete = 100 - ((passTestSetCounts/numTotalTests)*100);
 
