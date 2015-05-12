@@ -244,7 +244,7 @@
                 _queryForTestResults: function(mystore, testsetdata) {
                     that = this;
                     that._testSetTestList = [];
-                    console.log(testsetdata);
+                    //console.log(testsetdata);
                     
                     Ext.Array.each(testsetdata, function(record) {
                         ProjObj = record.get('Project');
@@ -294,8 +294,8 @@
                 _onTestsLoaded: function(mystore, testrecorddata) {
                     that = this;
                     that._testResultList = [];
-					that._testKeyResultList2=[];
-                    console.log(testrecorddata);
+			that._testKeyResultList2=[];
+                    //console.log(testrecorddata);
 
                     Ext.Array.each(testrecorddata, function(record) {
                         var datevar = record.get('Date');
