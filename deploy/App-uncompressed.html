@@ -3,7 +3,7 @@
 <head>
     <title>Test Status per Test Set by Iteration</title>
         <meta name="Name" content="Test Status per Test Set by Iteration" />
-        <meta name="Version" content="3.0" />
+        <meta name="Version" content="3.12" />
         <meta name="Vendor" content="Rally Software" />
         <meta name="Author" content="Joel K" />
 
@@ -244,8 +244,7 @@
                 _queryForTestResults: function(mystore, testsetdata) {
                     that = this;
                     that._testSetTestList = [];
-					that._testSetKeyTestList = [];
-                    //console.log(testsetdata);
+                    console.log(testsetdata);
                     
                     Ext.Array.each(testsetdata, function(record) {
                         ProjObj = record.get('Project');
@@ -261,27 +260,8 @@
                             });
                         });
                     });
-					
-					//create key test case list
-					/* Ext.Array.each(testsetdata, function(record) {
-                        Ext.Array.each(record.get('TestCases'), function(name, index) {
-						if ((name.FormattedID=='xx') || (name.FormattedID =='xxx'))
-						{
-                            that._testSetKeyTestList.push({
-                                resID: name.FormattedID,
-                                resName: name.Name,
-                                resObject: name.ObjectID,
-                                resSetID: record.get('FormattedID'),
-                                resSet: record.get('Name'),
-                                resSetObject: record.get('ObjectID'),
-                                resSetProject: record.get('Project.ObjectID')                        
-                            });
-						}
-                        });
-                    });*/
-					
-					
-
+				
+				
                     TestResultStore = Ext.create('Rally.data.WsapiDataStore', {
                         model: 'TestCaseResult',
                         autoLoad: true,
@@ -308,14 +288,14 @@
                             },
                             scope: this
                         }
-                    });                
+                    });              
                 },
 
                 _onTestsLoaded: function(mystore, testrecorddata) {
                     that = this;
                     that._testResultList = [];
 					that._testKeyResultList2=[];
-                    //console.log(testrecorddata);
+                    console.log(testrecorddata);
 
                     Ext.Array.each(testrecorddata, function(record) {
                         var datevar = record.get('Date');
@@ -884,132 +864,11 @@
 
                         ]
                     });
-                    this.down('#testStatus1').add(this._Grid2);
-                    
-					//get the data out there for KEY Test case results
-                    /* this._GridKeyRuns = Ext.create('Rally.ui.grid.Grid', {
-                        xtype: 'rallygrid',
-                        store: Ext.create('Rally.data.custom.Store', {
-                            storeId: 'KeyTestResultsStore',
-                            data: that._testKeyResultList2,
-                            autoScroll: true,
-                            columnLines: true
-							
-                        }),
-						columnLines:true,
-                        title: '<B>KEY Test Results</B>',
-                        enableEditing: true,
-                        columnCfgs: [
-                            { 
-                                text: 'Set ID', dataIndex: 'resSetID' , flex: 1,
-                                renderer: function(value, meta, record) {
-                                    var proj = record.get('resSetProject');
-                                    var setID = record.get('resSetObject');
-                                    var link = "../#/" + proj+ '/detail/testset/' + setID + '/run';
-                                    return '<a href="' + link + '"target="_parent">' + value + '</a>';
-                                }
-                            },
-                            {
-                                text: 'Test Set', dataIndex: 'resSet', flex: 2
-                            },
-                            { 
-                                text: 'Test ID', dataIndex: 'resID' , flex: 1,
-                                renderer: function(value, meta, record) {
-                                    var proj = record.get('resSetProject');
-                                    var caseID = record.get('resObject');
-                                    var link = "../#/" + proj+ '/detail/testcase/' + caseID;
-                                    return '<a href="' + link + '"target="_parent">' + value + '</a>';
-                                }
-                            },
-                            {
-                                text: 'Test Name', dataIndex: 'resName', flex: 3
-                            },
-                            {
-                                text: 'Last Verdict', dataIndex: 'resVerdict', flex: 1,
-                                renderer: function(value, meta, record) {
-                                    var newvalue;
-                                    if (value === 'Fail') {
-                                      newvalue = "<span style='color:red;font-weight:bold' >"+value+"</span>";
-                                    } else if (value === 'Pass') {
-                                      newvalue = "<span style='color:green;font-weight:bold' >"+value+"</span>";
-                                    } else if (value === 'Blocked') {
-                                      newvalue = "<span style='color:orange;font-weight:bold' >"+value+"</span>";
-                                    } else if (value === 'Error') {
-                                      newvalue = "<span style='color:orange;font-weight:bold' >"+value+"</span>";
-                                    } else {
-                                      newvalue = "<span style='color:gray;font-weight:bold' >"+value+"</span>";
-                                    }
-                                    return newvalue;
-                                  }
-                            },
-                            {
-                                text: 'Tester Name', dataIndex: 'resTester', flex: 1
-                            },
-                            {
-                                text: 'Execution Date', dataIndex: 'resDate', flex: 1
-                            }
+                    if (TestSetList.length !== 0) {
+                        this.down('#testStatus1').add(this._Grid2);
+                    }
 
-                        ]
-                    });
-
-                    this.down('#testStatus').add(this._GridKeyRuns); */
-					
-					
-					//get the data out there for remaining KEY tests to run
-                    /* this._GridKeyToRun = Ext.create('Rally.ui.grid.Grid', {
-                        xtype: 'rallygrid',
-                        store: Ext.create('Rally.data.custom.Store', {
-                            storeId: 'TestSetStorer',
-                            data: that._testSetKeyTestList,
-                            autoScroll: true,
-                            columnLines: true
-                        }),
-                        title: '<B>KEY Tests Remaining to Run</B>',
-						columnLines:true,
-                        enableEditing: true,
-                        columnCfgs: [
-                            { 
-                                text: 'Set ID', dataIndex: 'resSetID' , flex: 1,
-                                renderer: function(value, meta, record) {
-                                    var proj = record.get('resSetProject');
-                                    var setID = record.get('resSetObject');
-                                    var link = "../#/" + proj+ '/detail/testset/' + setID + '/run';
-                                    return '<a href="' + link + '"target="_parent">' + value + '</a>';
-                                }
-                            },
-                            {
-                                text: 'Test Set', dataIndex: 'resSet', flex: 2
-                            },
-                            { 
-                                text: 'Test ID', dataIndex: 'resID' , flex: 1,
-                                renderer: function(value, meta, record) {
-                                    var proj = record.get('resSetProject');
-                                    var caseID = record.get('resObject');
-                                    var link = "../#/" + proj+ '/detail/testcase/' + caseID;
-                                    return '<a href="' + link + '"target="_parent">' + value + '</a>';
-                                }
-                            },
-                            {
-                                text: 'Test Name', dataIndex: 'resName', flex: 2
-                            },
-							{ 
-                                text: 'Add Result', dataIndex: 'resID' , flex: 1,
-                                renderer: function(value, meta, record) {
-                                    var proj = record.get('resSetProject');
-                                    var setID = record.get('resSetObject');
-                                    var caseID = record.get('resObject');
-                                    var link = "../tcr/new.sp?cpoid=" + proj + "&projectScopeUp=false&projectScopeDown=false&testCaseOid=" + caseID;
-                                    var window = "javascript:void window.open('" + link + "','NewTestResultWindow','width=700,height=500,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0')";
-                                    var linker = '<a href="#" onClick="' + window + '"><b>NEW RESULT</b></a>';
-                                    return linker;
-                                }
-                            }
-
-                        ]
-                    });
-
-                    this.down('#testStatus').add(this._GridKeyToRun); */
-                    
+					                    
                     //get the data out there for remaining tests to run
                     this._Grid = Ext.create('Rally.ui.grid.Grid', {
                         xtype: 'rallygrid',
@@ -1063,7 +922,9 @@
                         ]
                     });
 
-                    this.down('#testStatus2').add(this._Grid);
+                    if (TestSetList.length !== 0) {
+                        this.down('#testStatus2').add(this._Grid);
+                    }
 					
 					/*var defilter = Ext.create('Rally.data.QueryFilter', {
             										property: 'State',
