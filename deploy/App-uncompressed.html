@@ -3,7 +3,7 @@
 <head>
     <title>Test Status per Test Set by Iteration</title>
         <meta name="Name" content="Test Status per Test Set by Iteration" />
-        <meta name="Version" content="3.12" />
+        <meta name="Version" content="3.2" />
         <meta name="Vendor" content="Rally Software" />
         <meta name="Author" content="Joel K" />
 
@@ -298,7 +298,7 @@
                     that = this;
                     that._testResultList = [];
 					that._testKeyResultList2=[];
-                    console.log(testrecorddata);
+                    //console.log(testrecorddata);
 
                     Ext.Array.each(testrecorddata, function(record) {
                         var datevar = record.get('Date');
@@ -550,9 +550,6 @@
                     //Need to find tests already run by looking at current results and comparing to complete list
                     var DeleteArray = [];
                     var numTotalTests = that._testSetTestList;
-
-                    console.log("numTotalTests");
-                    console.log(numTotalTests);
                     numTotalTests = numTotalTests.length;
 
                     Ext.Array.each(that._testResultList, function(record, index1) {
@@ -566,22 +563,24 @@
                     //Remove items from the complete list to just leave unrun tests
                     DeleteArray.sort(sortNumber);
                     DeleteArray.reverse();
-                    
-                    console.log("deletearray");
-                    console.log(DeleteArray);
 
                     for (var i=0; i<DeleteArray.length; i++) {
                         if (DeleteArray[i] == DeleteArray[i+1]) {
                             delete DeleteArray[i];
                         }
                     }
-                    
+
+                    DeleteArrayPre = DeleteArray
                     DeleteArray = DeleteArray.filter(function(n){return n});
                     
+                    // filter function strips zeros from end of array - check and re-add if required
+                    if (DeleteArray.length !== DeleteArrayPre.length) {
+                        DeleteArray.push(0);
+                    }
+
                     Ext.Array.each(DeleteArray, function(spliceID) {
                         that._testSetTestList.splice(spliceID, 1);
                     });
-					
 										
                     //Need to find tests already run by looking at current results and comparing to complete list
                     var DeleteKeyArray = [];
@@ -612,8 +611,6 @@
 					
                     //sum total test status
                     var numTestsNotRun = that._testSetTestList;
-                    console.log("numtestsnotrun");
-                    console.log(numTestsNotRun);
 
                     numTestsNotRun = numTestsNotRun.length;
                     testingPercentComplete = 100 - ((passTestSetCounts/numTotalTests)*100);
