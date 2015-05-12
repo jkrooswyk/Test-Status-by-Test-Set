@@ -724,7 +724,7 @@
                             Other: totalOther,
                             Total: totalTotal,
                             ToRun: totalToRun,
-                            PercentComplete: (((totalPass + totalFail + totalBlocked + totalError + totalOther)) / totalTotal) * 100,
+                            PercentComplete: (((totalPass + totalFail + totalBlocked + totalError + totalOther)) / totalTotal) * 100 || 0,
                             PercentPass: (totalPass/((totalPass + totalFail + totalBlocked + totalError + totalOther))) * 100 || 0,
                             ProjectObj: '',
                             TestSetObj: ''
