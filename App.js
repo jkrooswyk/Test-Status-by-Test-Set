@@ -1,6 +1,5 @@
-               launch: function() {
+launch: function() {
 					var deStore;
-
 					var panel1 =Ext.create('Ext.panel.Panel',{
 						layout: {
 							type: 'hbox',       // Arrange child items vertically
@@ -37,7 +36,6 @@
 								style: {
 									marginLeft: '10px'
 								},
-
 								flex:'1',
 								scope:this
 							}*/
@@ -55,11 +53,21 @@
 						   
 							{
 								xtype: 'container',
-								layout: 'accordion',
-								itemId: 'testStatus' ,
-								width:'100%',	
-								height: 500
-							}
+								layout: 'fit',
+								itemId: 'testStatus',
+								width: '100%',
+                                height: 400
+							},
+                            {
+                                xtype: 'container',
+                                itemId: 'testStatus1',
+                                width: '100%'
+                            },
+                            {
+                                xtype: 'container',
+                                itemId: 'testStatus2',
+                                width: '100%'
+                            }
 						]
 					});
 					
@@ -101,11 +109,9 @@
 							htmlTable+='<td>'+myData[r].Error+'</td>'; 
 							htmlTable+='<td>'+myData[r].Other+'</td>'; 
 							htmlTable+='<td>'+myData[r].Total+'</td>'; 
-
 							htmlTable+='</tr>';
 						}
 						htmlTable+='</table>'; 
-
 					   var cssTable = '<style type="text/css">';
 						cssTable +='table {border-collapse:collapse;...}';
 						cssTable +='th {color:#080808;border-bottom-style: solid; ...}';
@@ -113,7 +119,6 @@
 						cssTable +='td {padding:3px 4px; text-align:left; vertical-align:top;}';
 						cssTable +='#filter {text-align:left; ...}';    
 						cssTable += '</style>';
-
 						var printwindow=window.open('', '', 'width=1000,height=500');
 						var myDate = new Date;
 						printwindow.document.write('<div id="todayDate">' + Ext.Date.format(myDate,'F j, Y, g:i a') + '</div>');            
@@ -127,7 +132,6 @@
 					},
 					
 					_printDefects: function() {
-
 							var myData = this.deStore;    
 							var htmlTable ='<table>';
 							htmlTable +='<width="100%">';   
@@ -146,7 +150,6 @@
 								htmlTable+='</tr>';
 							}
 							htmlTable+='</table>'; 
-
 						   var cssTable = '<style type="text/css">';
 							cssTable +='table {border-collapse:collapse;...}';
 							cssTable +='th {color:#080808;border-bottom-style: solid; ...}';
@@ -154,7 +157,6 @@
 							cssTable +='td {padding:3px 4px; text-align:left; vertical-align:top;}';
 							cssTable +='#filter {text-align:left; ...}';    
 							cssTable += '</style>';
-
 							var printwindow=window.open('', '', 'width=1000,height=500');
 							var myDate = new Date;
 							printwindow.document.write('<div id="todayDate">' + Ext.Date.format(myDate,'F j, Y, g:i a') + '</div>');            
@@ -174,6 +176,7 @@
                         this._summaryGrid.destroy();
                         this._Grid.destroy();
                         this._Grid2.destroy();
+                        console.log("grids destroyed");
                     }
                     
                     TestSetStore = Ext.create('Rally.data.WsapiDataStore', {
@@ -205,12 +208,9 @@
                         }
                     });
                 },
-
                 _queryForTestResults: function(mystore, testsetdata) {
                     that = this;
                     that._testSetTestList = [];
-					that._testSetKeyTestList = [];
-                    //console.log(testsetdata);
                     
                     Ext.Array.each(testsetdata, function(record) {
                         ProjObj = record.get('Project');
@@ -226,27 +226,8 @@
                             });
                         });
                     });
-					
-					//create key test case list
-					/* Ext.Array.each(testsetdata, function(record) {
-                        Ext.Array.each(record.get('TestCases'), function(name, index) {
-						if ((name.FormattedID=='xx') || (name.FormattedID =='xxx'))
-						{
-                            that._testSetKeyTestList.push({
-                                resID: name.FormattedID,
-                                resName: name.Name,
-                                resObject: name.ObjectID,
-                                resSetID: record.get('FormattedID'),
-                                resSet: record.get('Name'),
-                                resSetObject: record.get('ObjectID'),
-                                resSetProject: record.get('Project.ObjectID')                        
-                            });
-						}
-                        });
-                    });*/
-					
-					
-
+				
+				
                     TestResultStore = Ext.create('Rally.data.WsapiDataStore', {
                         model: 'TestCaseResult',
                         autoLoad: true,
@@ -258,7 +239,11 @@
                             property : 'TestSet.Iteration.Name',
                             operator : '=',
                             value    : this.down('#iterationComboBox').getRecord().data.Name
-                        }, ],
+                        }, {
+                            property : 'TestSet.Project',
+                            operator : '=',
+                            value: this.getContext().getDataContext().project
+                        }],
                         //sorters: [{
                         //        property: 'TestSet',
                         //        direction: 'ASC'
@@ -273,25 +258,27 @@
                             },
                             scope: this
                         }
-                    });                
+                    });              
                 },
-
                 _onTestsLoaded: function(mystore, testrecorddata) {
                     that = this;
                     that._testResultList = [];
 					that._testKeyResultList2=[];
                     //console.log(testrecorddata);
-
                     Ext.Array.each(testrecorddata, function(record) {
                         var datevar = record.get('Date');
-
+                 		//test for tester's name on result
+                        var testerName = record.get('Tester') || "<I>No Tester Name<I>";
+                        if (testerName !== "<I>No Tester Name<I>") {
+                        	testerName = record.get('Tester')._refObjectName
+                        }
                         that._testResultList.push({
                                 resID: record.get('TestCase').FormattedID,
                                 resName: record.get('TestCase')._refObjectName,
                                 resObject: record.get('TestCase').ObjectID,
                                 resVerdict: record.get('Verdict'),
                                 resDate: datevar,
-                                resTester: record.get('Tester')._refObjectName,
+                                resTester: testerName,
                                 resSetID: record.get('TestSet').FormattedID,
                                 resSet: record.get('TestSet')._refObjectName,
                                 resSetObject: record.get('TestSet').ObjectID,
@@ -300,7 +287,6 @@
                         });
                     });
 					
-
                     //Eliminate tests run more than once
                     resultsDeleteArray = [];
                     Ext.Array.each(that._testResultList, function(record, index1) {
@@ -326,19 +312,15 @@
                             }
                         });
                     });
-
                     //Remove older items from the results list  
                     resultsDeleteArray.sort(sortNumber);
                     resultsDeleteArray.reverse();
-
                     for (var i=0; i<resultsDeleteArray.length; i++) {
                         if (resultsDeleteArray[i] == resultsDeleteArray[i+1]) {
                             delete resultsDeleteArray[i];
                         }
                     }
-
                     resultsDeleteArray = resultsDeleteArray.filter(function(n){return n});
-
                     Ext.Array.each(resultsDeleteArray, function(spliceID) {
                         that._testResultList.splice(spliceID, 1);
                     });
@@ -346,19 +328,15 @@
 					//Remove older items from the key results list  
                     resultsKeyDeleteArray.sort(sortNumber);
                     resultsKeyDeleteArray.reverse();
-
                     for (var i=0; i<resultsKeyDeleteArray.length; i++) {
                         if (resultsKeyDeleteArray[i] == resultsKeyDeleteArray[i+1]) {
                             delete resultsKeyDeleteArray[i];
                         }
                     }
-
                     resultsKeyDeleteArray = resultsKeyDeleteArray.filter(function(n){return n});
-
                     Ext.Array.each(resultsKeyDeleteArray, function(spliceID) {
                         that._testResultList.splice(spliceID, 1);
                     });
-
                     //clean up dates in results list
                     Ext.Array.each(that._testResultList, function(record, index1) {
                         datevar = record.resDate; 
@@ -406,7 +384,6 @@
 						}
                         record.resDate = datevar.getFullYear()+'-'+doubleMonth+'-'+doubleDate;
                     });
-
                     //create test set list
                     var TestSetList =[];
                     var testindex = 0;
@@ -424,7 +401,6 @@
                         }
                     });
 					
-
                     //create test set objectID list for hotlinking
                     var TestSetObjList2 =[];
                     var testindex = 0;
@@ -441,7 +417,6 @@
                             }
                         }
                     });
-
                     //create test set name list
                     var TestSetNameList =[];
                     var testindex = 0;
@@ -462,7 +437,6 @@
                             }
                         }
                     });
-
                     //create test set project list for hotlinking
                     var TestSetObjList = [];
                     var index = TestSetObjList2.length;
@@ -471,7 +445,6 @@
                         TestSetObjList.push(that._testSetTestList[i].resSetProject);
                         i++;
                     }
-
                     //obtain counts for each test set
                     var totalTestSetCounts = [];
                     var testCounters = 0;
@@ -484,7 +457,6 @@
                         totalTestSetCounts.push(testCounters);
                         testCounters = 0;
                     });
-
                     //obtain test outcome counts for each test set
                     var passTestSetCounts = [];
                     var failTestSetCounts = [];
@@ -523,7 +495,6 @@
                         testErrorCounters = 0;
                         testOtherCounters = 0;
                     });
-
                     //Need to find tests already run by looking at current results and comparing to complete list
                     var DeleteArray = [];
                     var numTotalTests = that._testSetTestList;
@@ -535,39 +506,25 @@
                             }
                         });
                     });
-
                     //Remove items from the complete list to just leave unrun tests
                     DeleteArray.sort(sortNumber);
                     DeleteArray.reverse();
-                    
                     for (var i=0; i<DeleteArray.length; i++) {
                         if (DeleteArray[i] == DeleteArray[i+1]) {
                             delete DeleteArray[i];
                         }
                     }
-                    
+                    DeleteArrayPre = DeleteArray
                     DeleteArray = DeleteArray.filter(function(n){return n});
                     
+                    // filter function strips zeros from end of array - check and re-add if required
+                    if (DeleteArray.length !== DeleteArrayPre.length) {
+                        DeleteArray.push(0);
+                    }
                     Ext.Array.each(DeleteArray, function(spliceID) {
                         that._testSetTestList.splice(spliceID, 1);
                     });
-					
-					//find KEY test to run 
-					
-					///////////////////////////////////////////////////////////////////
-					//add only selected TC to the key test set test list
-					/* Ext.Array.each(that._testResultList, function(record) {
-					
-						if ((record.resID=='TC8701') || (record.resID =='TC5322') ||(record.resID =='TC5323')||(record.resID=='TC5481') ||(record.resID=='TC13802')||(record.resID=='TC5483')||(record.resID=='TC5484')||(record.resID=='TC5557')||(record.resID=='TC5556')||(record.resID=='TC5555')||(record.resID=='TC5554')||(record.resID=='TC5551')||(record.resID=='TC5550')||(record.resID=='TC13803'))
-
-						{
-							that._testKeyResultList2.push(record);
-						}
-                    }); */
-					/////////////////////////////////////////////////////////////////////////////
-
-					
-					
+										
                     //Need to find tests already run by looking at current results and comparing to complete list
                     var DeleteKeyArray = [];
                     Ext.Array.each(that._testKeyResultList2, function(record, index1) {
@@ -577,7 +534,6 @@
                             }
                         });
                     });
-
                     //Remove items from the complete list to just leave unrun tests
                     DeleteKeyArray.sort(sortNumber);
                     DeleteKeyArray.reverse();
@@ -593,24 +549,28 @@
                     Ext.Array.each(DeleteKeyArray, function(spliceID) {
                         that._testSetKeyTestList.splice(spliceID, 1);
                     });
-					
-					//end find KEY test to run
-					
+									
 					
                     //sum total test status
                     var numTestsNotRun = that._testSetTestList;
                     numTestsNotRun = numTestsNotRun.length;
                     testingPercentComplete = 100 - ((passTestSetCounts/numTotalTests)*100);
-
                     //get the summary data out there for results
                     that._testSummary = [];
+             
                     TestSetList.forEach(function(record, index) {
                         var percentComplete = (((passTestSetCounts[index] + failTestSetCounts[index] + blockedTestSetCounts[index] + errorTestSetCounts[index] + otherTestSetCounts[index])) / totalTestSetCounts[index]);
-                        if (percentComplete > 1) {percentComplete = 1}
+                        if (percentComplete > 1) {
+                        	percentComplete = 1;
+                        }
                         var testingPercentPass = (passTestSetCounts[index]/((passTestSetCounts[index] + failTestSetCounts[index] + blockedTestSetCounts[index] + errorTestSetCounts[index] + otherTestSetCounts[index]))) || 0;
-                        if (testingPercentPass > 1) {testingPercentPass = 1}
+                        if (testingPercentPass > 1) {
+                        	testingPercentPass = 1;
+                        }
                         var lefttoRun = (totalTestSetCounts[index] - (passTestSetCounts[index] + failTestSetCounts[index] + blockedTestSetCounts[index] + errorTestSetCounts[index] + otherTestSetCounts[index]));
-                        if (lefttoRun < 0) {lefttoRun = 0}
+                        if (lefttoRun < 0) {
+                        	lefttoRun = 0;
+                        }
                         
                         that._testSummary.push({
                             TestSetID: TestSetList[index],
@@ -666,9 +626,8 @@
 					{
 						totalTotal+=that._testSummary[r].Total;
 					}
-
-			that._testSummary.push({
-                            TestSetID: '',
+			     that._testSummary.push({
+                            TestSetID: '--',
                             TestSetName: '<B>TOTALS</B>',
                             Passed: totalPass,
                             Failed: totalFail,
@@ -677,12 +636,11 @@
                             Other: totalOther,
                             Total: totalTotal,
                             ToRun: totalToRun,
-                            PercentComplete: (((totalPass + totalFail + totalBlocked + totalError + totalOther)) / totalTotal) * 100,
+                            PercentComplete: (((totalPass + totalFail + totalBlocked + totalError + totalOther)) / totalTotal) * 100 || 0,
                             PercentPass: (totalPass/((totalPass + totalFail + totalBlocked + totalError + totalOther))) * 100 || 0,
                             ProjectObj: '',
                             TestSetObj: ''
                         });
-
                     this._summaryGrid = Ext.create('Rally.ui.grid.Grid', {
                         xtype: 'rallygrid',
                         store: Ext.create('Rally.data.custom.Store', {
@@ -759,20 +717,17 @@
                                 text: 'Blocked', dataIndex: 'Blocked', flex: 1
                             },
                             {
-                                text: 'Inconclusive', dataIndex: 'Error', flex: 1
+                                text: 'Inconclusive', dataIndex: 'Other', flex: 1
                             },
                             {
-                                text: 'Error', dataIndex: 'Other', flex: 1
+                                text: 'Error', dataIndex: 'Error', flex: 1
                             },
                             {
                                 text: 'Set Total', dataIndex: 'Total', flex: 1
                             }
-
                         ]
                     });
-
                     this.down('#testStatus').add(this._summaryGrid);
-
                     //get the data out there for results
                     this._Grid2 = Ext.create('Rally.ui.grid.Grid', {
                         xtype: 'rallygrid',
@@ -834,135 +789,12 @@
                             {
                                 text: 'Execution Date', dataIndex: 'resDate', flex: 1
                             }
-
                         ]
                     });
-                    this.down('#testStatus').add(this._Grid2);
-                    
-					//get the data out there for KEY Test case results
-                    /* this._GridKeyRuns = Ext.create('Rally.ui.grid.Grid', {
-                        xtype: 'rallygrid',
-                        store: Ext.create('Rally.data.custom.Store', {
-                            storeId: 'KeyTestResultsStore',
-                            data: that._testKeyResultList2,
-                            autoScroll: true,
-                            columnLines: true
-							
-                        }),
-						columnLines:true,
-                        title: '<B>KEY Test Results</B>',
-                        enableEditing: true,
-                        columnCfgs: [
-                            { 
-                                text: 'Set ID', dataIndex: 'resSetID' , flex: 1,
-                                renderer: function(value, meta, record) {
-                                    var proj = record.get('resSetProject');
-                                    var setID = record.get('resSetObject');
-                                    var link = "../#/" + proj+ '/detail/testset/' + setID + '/run';
-                                    return '<a href="' + link + '"target="_parent">' + value + '</a>';
-                                }
-                            },
-                            {
-                                text: 'Test Set', dataIndex: 'resSet', flex: 2
-                            },
-                            { 
-                                text: 'Test ID', dataIndex: 'resID' , flex: 1,
-                                renderer: function(value, meta, record) {
-                                    var proj = record.get('resSetProject');
-                                    var caseID = record.get('resObject');
-                                    var link = "../#/" + proj+ '/detail/testcase/' + caseID;
-                                    return '<a href="' + link + '"target="_parent">' + value + '</a>';
-                                }
-                            },
-                            {
-                                text: 'Test Name', dataIndex: 'resName', flex: 3
-                            },
-                            {
-                                text: 'Last Verdict', dataIndex: 'resVerdict', flex: 1,
-                                renderer: function(value, meta, record) {
-                                    var newvalue;
-                                    if (value === 'Fail') {
-                                      newvalue = "<span style='color:red;font-weight:bold' >"+value+"</span>";
-                                    } else if (value === 'Pass') {
-                                      newvalue = "<span style='color:green;font-weight:bold' >"+value+"</span>";
-                                    } else if (value === 'Blocked') {
-                                      newvalue = "<span style='color:orange;font-weight:bold' >"+value+"</span>";
-                                    } else if (value === 'Error') {
-                                      newvalue = "<span style='color:orange;font-weight:bold' >"+value+"</span>";
-                                    } else {
-                                      newvalue = "<span style='color:gray;font-weight:bold' >"+value+"</span>";
-                                    }
-                                    return newvalue;
-                                  }
-                            },
-                            {
-                                text: 'Tester Name', dataIndex: 'resTester', flex: 1
-                            },
-                            {
-                                text: 'Execution Date', dataIndex: 'resDate', flex: 1
-                            }
-
-                        ]
-                    });
-
-                    this.down('#testStatus').add(this._GridKeyRuns); */
-					
-					
-					//get the data out there for remaining KEY tests to run
-                    /* this._GridKeyToRun = Ext.create('Rally.ui.grid.Grid', {
-                        xtype: 'rallygrid',
-                        store: Ext.create('Rally.data.custom.Store', {
-                            storeId: 'TestSetStorer',
-                            data: that._testSetKeyTestList,
-                            autoScroll: true,
-                            columnLines: true
-                        }),
-                        title: '<B>KEY Tests Remaining to Run</B>',
-						columnLines:true,
-                        enableEditing: true,
-                        columnCfgs: [
-                            { 
-                                text: 'Set ID', dataIndex: 'resSetID' , flex: 1,
-                                renderer: function(value, meta, record) {
-                                    var proj = record.get('resSetProject');
-                                    var setID = record.get('resSetObject');
-                                    var link = "../#/" + proj+ '/detail/testset/' + setID + '/run';
-                                    return '<a href="' + link + '"target="_parent">' + value + '</a>';
-                                }
-                            },
-                            {
-                                text: 'Test Set', dataIndex: 'resSet', flex: 2
-                            },
-                            { 
-                                text: 'Test ID', dataIndex: 'resID' , flex: 1,
-                                renderer: function(value, meta, record) {
-                                    var proj = record.get('resSetProject');
-                                    var caseID = record.get('resObject');
-                                    var link = "../#/" + proj+ '/detail/testcase/' + caseID;
-                                    return '<a href="' + link + '"target="_parent">' + value + '</a>';
-                                }
-                            },
-                            {
-                                text: 'Test Name', dataIndex: 'resName', flex: 2
-                            },
-							{ 
-                                text: 'Add Result', dataIndex: 'resID' , flex: 1,
-                                renderer: function(value, meta, record) {
-                                    var proj = record.get('resSetProject');
-                                    var setID = record.get('resSetObject');
-                                    var caseID = record.get('resObject');
-                                    var link = "../tcr/new.sp?cpoid=" + proj + "&projectScopeUp=false&projectScopeDown=false&testCaseOid=" + caseID;
-                                    var window = "javascript:void window.open('" + link + "','NewTestResultWindow','width=700,height=500,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0')";
-                                    var linker = '<a href="#" onClick="' + window + '"><b>NEW RESULT</b></a>';
-                                    return linker;
-                                }
-                            }
-
-                        ]
-                    });
-
-                    this.down('#testStatus').add(this._GridKeyToRun); */
-                    
+                    if (TestSetList.length !== 0) {
+                        this.down('#testStatus1').add(this._Grid2);
+                    }
+					                    
                     //get the data out there for remaining tests to run
                     this._Grid = Ext.create('Rally.ui.grid.Grid', {
                         xtype: 'rallygrid',
@@ -1009,14 +841,14 @@
                                     var link = "../tcr/new.sp?cpoid=" + proj + "&projectScopeUp=false&projectScopeDown=false&testCaseOid=" + caseID + "&testSetOid=" + setID;
                                     var window = "javascript:void window.open('" + link + "','NewTestResultWindow','width=700,height=500,toolbar=0,menubar=0,location=0,status=1,scrollbars=1,resizable=1,left=0,top=0')";
                                     var linker = '<a href="#" onClick="' + window + '">NEW RESULT</a>';
-
                                     return linker;
                                 }
                             }*/
                         ]
                     });
-
-                    this.down('#testStatus').add(this._Grid);
+                    if (TestSetList.length !== 0) {
+                        this.down('#testStatus2').add(this._Grid);
+                    }
 					
 					/*var defilter = Ext.create('Rally.data.QueryFilter', {
             										property: 'State',
@@ -1042,13 +874,11 @@
 						  context: {
 							   project: this.getContext().getDataContext().project,
 							   projectScopeDown: true
-
 						   },
 						  pageSize: 50,
 						  autoLoad: true,                         // <----- Don't forget to set this to true! heh
 						  listeners: {
 							  load: function(myStore, myData, success) {
-
 								  this._loadDEGrid(myStore);      // if we did NOT pass scope:this below, this line would be incorrectly trying to call _createGrid() on the store which does not exist.
 							  },
 							  scope: this                         // This tells the wsapi data store to forward pass along the app-level context into ALL listener functions
@@ -1056,7 +886,6 @@
 						  filters:[
 								defilter
 							],
-
 						  fetch: ['FormattedID', 'Name', 'Owner','ScheduleState','Release','State']   // Look in the WSAPI docs online to see all fields available!
 						});*/
                 },
@@ -1079,7 +908,6 @@
 					}*/
                 
             });
-
         function sortNumber(a,b)
             {
                 return a - b;
