@@ -1,3 +1,5 @@
+//uncompressed full app is in deploy folder of this repo
+
 launch: function() {
 					var deStore;
 					var panel1 =Ext.create('Ext.panel.Panel',{
